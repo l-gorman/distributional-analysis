@@ -3,10 +3,10 @@
 #SBATCH --job-name=test_job
 #SBATCH --partition=test
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=1
+#SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=4
-#SBATCH --time=00:10:00
-#SBATCH --mem=2000M
+#SBATCH --time=00:20:00
+#SBATCH --mem=2G
 
 
 cd "${SLURM_SUBMIT_DIR}"

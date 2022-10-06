@@ -8,6 +8,18 @@ set.seed(404)
 n_cores <- detectCores(all.tests = FALSE, logical = TRUE)
 
 
+# option_list = list(
+#   make_option(c("-n", "--number"), action="store", default=NA, type='character',
+#               help="just a variable named a"),
+#   make_option(c("-b", "--bvar"), action="store", default=NA, type='character',
+#               help="just a variable named b"),
+#   make_option(c("-v", "--verbose"), action="store_true", default=TRUE,
+#               help="Should the program print extra stuff out? [default %default]"),
+#   make_option(c("-q", "--quiet"), action="store_false", dest="verbose",
+#               help="Make the program not be verbose."),
+#   make_option(c("-c", "--cvar"), action="store", default="this is c",
+#               help="a variable named c, with a default [default %default]")  
+# )
 
 
 # Data Generation ---------------------------------------------------------
