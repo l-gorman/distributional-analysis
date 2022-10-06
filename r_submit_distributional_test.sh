@@ -1,12 +1,16 @@
 #!/bin/bash
 
+#SBATCH --mail-user=[lg14410@bristol.ac.uk]
+#SBATCH --mail-type=END,FAIL,TIME_LIMIT_80
+
+
 #SBATCH --job-name=test_job
 #SBATCH --partition=test
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=4
-#SBATCH --cpus-per-task=4
-#SBATCH --time=00:20:00
-#SBATCH --mem=2G
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=16
+#SBATCH --time=01:00:00
+#SBATCH --mem=8G
 
 
 cd "${SLURM_SUBMIT_DIR}"

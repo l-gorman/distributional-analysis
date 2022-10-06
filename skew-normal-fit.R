@@ -1,8 +1,8 @@
-
 # Setup -------------------------------------------------------------------
 library(brms) 
 library(ggplot2)
 library(parallel)
+
 
 set.seed(404)
 n_cores <- detectCores(all.tests = FALSE, logical = TRUE)
@@ -123,6 +123,5 @@ prediction_plot <- ggplot() +
   scale_colour_manual(c("",""),values=c("black","black"))
 
 ggsave("./outputs/prediction_plot.png", plot = prediction_plot)
-
 
 
