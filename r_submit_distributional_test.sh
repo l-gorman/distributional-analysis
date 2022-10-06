@@ -2,7 +2,7 @@
 
 #SBATCH --mail-user=[lg14410@bristol.ac.uk]
 #SBATCH --mail-type=END,FAIL,TIME_LIMIT_80
-#SBATCH --job-name=test_job
+#SBATCH --job-name=distributional-analysis
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
