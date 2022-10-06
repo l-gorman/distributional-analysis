@@ -57,17 +57,13 @@ lss_brm <- brm(lss_fm,
                  link_sigma = "log", 
                  link_alpha = "identity"),
                control=list(adapt_delta = 0.99),
-               warmup = 100,
-               iter = 1e4,
-               cores = n_cores-1,
+               cores = 4,
                prior = c(
                  prior("normal(0, 10)", class = Intercept),
                  prior("normal(0, 1000)", class = b, coef = X),
                  
                  prior("normal(0, 10)", dpar = sigma),
                  prior("normal(0, 2)", dpar = alpha)
-                 
-                 
                ),init = 0,
                seed = 404
                
@@ -84,24 +80,28 @@ lss_brm <- brm(lss_fm,
                # )
 )
 
+save(lss_brm, file = "./outputs/distributional_fit.rda")
 
-# prior_summary(lss_brm)
-plot(lss_brm) 
 
-pp_check(lss_brm) + theme(text=element_text(family="Arial"))
-# set_prior(prior = "student_t(3,10,10)",class = "b",coeff="X2", dpar = "alpha",lb = -5,ub = 5)
+png(filename = "./outputs/plot_diagnostics.png")
+plot(lss_brm, ask = F) 
+dev.off()
+
+png(filename = "./outputs/pp_check.png")
+pp_check(lss_brm)
+dev.off()
 
 
 # Summarising fit
-summary(lss_brm)
+readr::write_file(paste0(as.character(summary(lss_brm)), collapse = "\n"),"./outputs/fit_summary.txt")
+# readr::write_file(r(prior_su %>% mmary(lss_brm)),"./outputs/prior_summary.txt")
+
 
 # Prediction
 pred_df <- data.frame(X = seq(0, 100))
 lss_post_pred <- cbind(pred_df, predict(lss_brm, newdata = pred_df))
 
-
-
-ggplot() +
+prediction_plot <- ggplot() +
   geom_point(data=sim_data, aes(y=y, x=X, shape="Data Point"))+
   scale_shape_manual("",values=c(16))+
   
@@ -111,18 +111,7 @@ ggplot() +
   geom_line(data=lss_post_pred,aes(x=X, y=Estimate, color="Estimate"))+
   scale_colour_manual(c("",""),values=c("black","black"))
 
-ggplot() +
-  geom_point(data=sim_data, aes(y=y, x=X, shape="Data Point"))+
-  scale_shape_manual("",values=c(16))+
-  
-  geom_ribbon(data=lss_post_pred,aes(x=X, ymin=Q2.5, ymax=Q97.5,fill = "Confidence Interval"), alpha=0.5)+
-  scale_fill_manual("",values="grey12") +
-  
-  geom_line(data=lss_post_pred,aes(x=X, y=Estimate, color="Estimate"))+
-  scale_colour_manual(c("",""),values=c("black","black"))+
-  ylim(c(0,50))
-
-
+ggsave("./outputs/prediction_plot.png", plot = prediction_plot)
 
 
 
