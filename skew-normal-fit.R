@@ -2,7 +2,6 @@
 # Setup -------------------------------------------------------------------
 library(brms) 
 library(ggplot2)
-library(gamlss.dist)
 library(parallel)
 
 set.seed(404)
