@@ -31,7 +31,8 @@ export OMP_NUM_THREADS=4
 
 for SAMPLE in 100 500  
 do
-  for ITER in 2000 5000  
+  for ITER in 2000 5000 
+  do
     Rscript skew-normal-fit.R -n $SAMPLE -i $ITER -d $d
   done
 done
