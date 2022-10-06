@@ -8,9 +8,9 @@
 #SBATCH --partition=test
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=16
-#SBATCH --time=01:00:00
-#SBATCH --mem=8G
+#SBATCH --cpus-per-task=4
+#SBATCH --time=03:00:00
+#SBATCH --mem=12G
 
 
 cd "${SLURM_SUBMIT_DIR}"
@@ -28,6 +28,19 @@ echo More details on submitting jobs here https://www.acrc.bris.ac.uk/protected/
 
 module add languages/r/4.1.0
 
+d=$(date +%Y-%m-%d)|
+
 export OMP_NUM_THREADS=4
 
-Rscript skew-normal-fit.R
+for SAMPLE in 100 500 1000 2000
+do
+  for ITER in 2000 5000 10000 20000
+    Rscript skew-normal-fit.R -n $SAMPLE -i $ITER -d "$d"
+  done
+    
+done
+
+
+
+
+

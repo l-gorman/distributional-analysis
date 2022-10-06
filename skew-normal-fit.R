@@ -2,28 +2,26 @@
 library(brms) 
 library(ggplot2)
 library(parallel)
-
+library(optparse)
 
 set.seed(404)
-n_cores <- detectCores(all.tests = FALSE, logical = TRUE)
 
+option_list = list(
+  make_option(c("-n", "--number"),  type='integer',
+               help="just a variable named a"),
+  make_option(c("-i", "--iter"),  type='integer',
+              help="Iterations"),
+  make_option(c("-d", "--directory"), type='character',
+               help="The directory where the file will be stored")
+  
 
-# option_list = list(
-#   make_option(c("-n", "--number"), action="store", default=NA, type='character',
-#               help="just a variable named a"),
-#   make_option(c("-b", "--bvar"), action="store", default=NA, type='character',
-#               help="just a variable named b"),
-#   make_option(c("-v", "--verbose"), action="store_true", default=TRUE,
-#               help="Should the program print extra stuff out? [default %default]"),
-#   make_option(c("-q", "--quiet"), action="store_false", dest="verbose",
-#               help="Make the program not be verbose."),
-#   make_option(c("-c", "--cvar"), action="store", default="this is c",
-#               help="a variable named c, with a default [default %default]")  
-# )
+)
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser);
 
 
 # Data Generation ---------------------------------------------------------
-N <- 100
+N <- opt$number
 X <- cbind(runif(N, 0, 100)) # Generate N uniform random numbers between 0-100
 
 # Setting Distributions Params for Coefficients
@@ -51,15 +49,13 @@ ggplot() +
   geom_point(data = sim_data,mapping = aes(x = X, y = y)) +
   labs(x= "X_rand", y = "Y_sim")
 
-
-#
 lss_fm <- bf(
   y ~ X ,
   sigma ~ X,
   alpha ~ X
 )
 
-get_prior(formula=lss_fm, lss_fm, data=sim_data,family = skew_normal(),autocor = NULL)
+# get_prior(formula=lss_fm, lss_fm, data=sim_data,family = skew_normal(),autocor = NULL)
 
 lss_brm <- brm(lss_fm, 
                data = sim_data, 
@@ -69,6 +65,7 @@ lss_brm <- brm(lss_fm,
                  link_alpha = "identity"),
                control=list(adapt_delta = 0.99),
                cores = 4,
+               iter = opt$iter,
                prior = c(
                  prior("normal(0, 10)", class = Intercept),
                  prior("normal(0, 1000)", class = b, coef = X),
@@ -91,21 +88,26 @@ lss_brm <- brm(lss_fm,
                # )
 )
 
-save(lss_brm, file = "./outputs/distributional_fit.rda")
 
 
-png(filename = "./outputs/plot_diagnostics.png")
-plot(lss_brm, ask = F) 
+
+main_folder <- paste0("./outputs/",opt$directory)
+sub_folder <- paste0("./outputs/",opt$directory,"/n_",opt$number, "iter_",opt$iter)
+dir.create(path=main_folder,showWarnings = F)
+dir.create(path=sub_folder,showWarnings = F)
+
+
+
+save(lss_brm, file = paste0(sub_folder,"/distributional_fit.rda"))
+
+
+png(filename = paste0(sub_folder,"/mcmc_plot.png"))
+brms::mcmc_plot(lss_brm)
 dev.off()
 
-png(filename = "./outputs/pp_check.png")
+png(filename = paste0(sub_folder,"/pp_check.png"))
 pp_check(lss_brm)
 dev.off()
-
-
-# Summarising fit
-readr::write_file(paste0(as.character(summary(lss_brm)), collapse = "\n"),"./outputs/fit_summary.txt")
-# readr::write_file(r(prior_su %>% mmary(lss_brm)),"./outputs/prior_summary.txt")
 
 
 # Prediction
@@ -122,6 +124,22 @@ prediction_plot <- ggplot() +
   geom_line(data=lss_post_pred,aes(x=X, y=Estimate, color="Estimate"))+
   scale_colour_manual(c("",""),values=c("black","black"))
 
-ggsave("./outputs/prediction_plot.png", plot = prediction_plot)
+ggsave( paste0(sub_folder,"/prediction_plot.png"), plot = prediction_plot)
 
 
+sink(paste0(sub_folder,"/fit_diagnostics.txt"))
+
+cat("\n")
+cat(paste0("Number of Samples:", opt$number,"\n"))
+cat(paste0("Number of Iterations:", opt$iter,"\n"))
+
+cat(paste0("Fit Summary\n"))
+
+summary(lss_brm)
+cat("\n")
+
+cat(paste0("Prior Summary\n"))
+prior_summary(lss_brm)
+cat("\n")
+
+sink()
