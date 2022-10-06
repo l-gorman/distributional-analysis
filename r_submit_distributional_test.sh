@@ -28,7 +28,7 @@ echo More details on submitting jobs here https://www.acrc.bris.ac.uk/protected/
 
 module add languages/r/4.1.0
 
-d=$(date +%Y-%m-%d)|
+d=$(date +%Y-%m-%d)
 
 export OMP_NUM_THREADS=4
 
