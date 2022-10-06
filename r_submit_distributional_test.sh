@@ -32,9 +32,9 @@ d=$(date +%Y-%m-%d)|
 
 export OMP_NUM_THREADS=4
 
-for SAMPLE in 100 500 1000 2000
+for SAMPLE in 100 500  
 do
-  for ITER in 2000 5000 10000 20000
+  for ITER in 2000 5000  
     Rscript skew-normal-fit.R -n $SAMPLE -i $ITER -d "$d"
   done
     
