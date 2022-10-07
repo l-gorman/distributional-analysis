@@ -360,7 +360,7 @@ summary_plot <- ggplot() +
   theme(axis.text.x = element_text(angle=45, hjust = 1))
 
 
-ggsave( paste0(subfolder,"/fit_summary"), plot = summary_plot)
+ggsave( paste0(sub_folder,"/fit_summary.png"), plot = summary_plot)
 
 
 
