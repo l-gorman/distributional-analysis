@@ -4,6 +4,7 @@ library(ggplot2)
 library(parallel)
 library(optparse)
 library(magrittr)
+library(bayesplot)
 set.seed(404)
 
 option_list = list(
@@ -21,8 +22,8 @@ opt = parse_args(opt_parser);
 
 # opt <- list(
 #   number=500,
-#   iter="2000",
-#   directory="three_way_comparison"
+#   iter=10000,
+#   directory="iter_comparison"
 # )
 
 
@@ -91,7 +92,7 @@ data_plot <- ggplot() +
 # Simple Regression --------------------------------------
 # Formula
 conv_fm <- bf(
-  y ~ X2
+  y ~ 0 + Intercept + X2
 )
 
 #get_prior(conv_fm,sim_data)
@@ -99,15 +100,17 @@ conv_fm <- bf(
 # Fitting Model
 conv_brm <- brm(conv_fm, 
                 data = sim_data, 
-                cores = 8,
-                chains = 8,
+                cores = 4,
+                chains = 4,
                 control=list(adapt_delta = 0.99),
                 iter = opt$iter,
                 
                 init = 0,
                 seed = 404,
                 prior = c(
-                  prior("normal(0, 10)", class = Intercept),
+                  prior("normal(0, 10)", class = b, coef = Intercept),
+                  
+                  # prior("normal(0, 10)", class = Intercept),
                   prior("normal(0, 1000)", class = b, coef = X2),
                   prior("normal(0, 10)", class = sigma)
                 )
@@ -117,7 +120,7 @@ conv_brm <- brm(conv_fm,
 save(conv_brm, file = paste0(conv_folder,"/distributional_fit.rda"))
 
 png(filename = paste0(conv_folder,"/mcmc_plot.png"))
-brms::mcmc_plot(conv_brm)
+bayesplot::mcmc_trace(conv_brm)
 dev.off()
 
 png(filename = paste0(conv_folder,"/pp_check.png"))
@@ -160,9 +163,11 @@ sink()
 
 # Model With Changing Variance --------------------------------------
 dist_fm <- bf(
-  y ~ X2,
-  sigma ~ X2
+  y ~ 0 + Intercept + X2,
+  sigma ~ 0 + Intercept + X2
 )
+
+# get_prior(dist_fm,sim_data)
 dist_brm <- brm(dist_fm, 
                 data = sim_data,
                 cores = 4,
@@ -172,16 +177,18 @@ dist_brm <- brm(dist_fm,
                 init = 0,
                 seed = 404,
                 prior = c(
-                  prior("normal(0, 10)", class = Intercept),
-                  prior("normal(0, 1000)", class = b, coef = X2),
-                  prior("normal(0, 10)", dpar = sigma)
+                  prior("normal(0, 10)", class = b,coef = Intercept),
+                  prior("normal(0, 10)", class = b, coef = X2),
+                  prior("normal(0, 10)", coef=X2, dpar = sigma),
+                  prior("normal(0, 10)", coef=Intercept,dpar = sigma)
+                  
                 ))
 
 
 save(dist_brm, file = paste0(dist_folder,"/distributional_fit.rda"))
 
 png(filename = paste0(dist_folder,"/mcmc_plot.png"))
-brms::mcmc_plot(dist_brm)
+bayesplot::mcmc_trace(dist_brm)
 dev.off()
 
 png(filename = paste0(dist_folder,"/pp_check.png"))
@@ -223,11 +230,12 @@ sink()
 
 # Model For Location Scale and Shape --------------------------------------
 lss_fm <- bf(
-  y ~ X2 ,
-  sigma ~ X2,
-  alpha ~ X2
+  y ~ 0 + Intercept + X2 ,
+  sigma ~ 0 + Intercept + X2,
+  alpha ~ 0 + Intercept + X2
 )
 
+# get_prior(lss_fm,sim_data, family = skew_normal())
 lss_brm <- brm(lss_fm, 
                data = sim_data, 
                family = skew_normal(
@@ -238,11 +246,15 @@ lss_brm <- brm(lss_fm,
                cores = 4,
                iter = opt$iter,
                prior = c(
-                 prior("normal(0, 10)", class = Intercept),
+                 prior("normal(0, 10)", coef = Intercept, class=b),
                  prior("normal(0, 1000)", class = b, coef = X2),
                  
-                 prior("normal(0, 10)", dpar = sigma),
-                 prior("normal(0, 2)", dpar = alpha)
+                 prior("normal(0, 10)", coef=Intercept ,dpar = sigma),
+                 prior("normal(0, 10)", coef=X2 ,dpar = sigma),
+                 
+                 prior("normal(0, 10)", coef=Intercept ,dpar = alpha),
+                 prior("normal(0, 10)", coef=X2 ,dpar = alpha)
+                 
                ),init = 0,
                seed = 404
                
@@ -251,8 +263,10 @@ lss_brm <- brm(lss_fm,
 save(lss_brm, file = paste0(lss_folder,"/distributional_fit.rda"))
 
 png(filename = paste0(lss_folder,"/mcmc_plot.png"))
-brms::mcmc_plot(lss_brm)
+bayesplot::mcmc_trace(lss_brm)
 dev.off()
+
+bayesplot::mcmc_trace(lss_brm)
 
 png(filename = paste0(lss_folder,"/pp_check.png"))
 pp_check(lss_brm)

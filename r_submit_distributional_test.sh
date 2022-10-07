@@ -5,8 +5,8 @@
 #SBATCH --job-name=distributional-analysis
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=8
-#SBATCH --time=06:00:00
+#SBATCH --cpus-per-task=4
+#SBATCH --time=08:00:00
 #SBATCH --mem=12G
 
 
@@ -27,9 +27,9 @@ module add languages/r/4.1.0
 
 # d=$(date +%Y-%m-%d)
 
-export OMP_NUM_THREADS=8
+export OMP_NUM_THREADS=4
 
-for SAMPLE in 500 
+for SAMPLE in 100, 500, 1000, 2000
 do
   for ITER in 2000 5000 10000 20000 50000
   do
