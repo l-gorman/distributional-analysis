@@ -19,11 +19,11 @@ option_list = list(
 opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
 
-opt <- list(
-  number=100,
-  iter="2000",
-  directory="three_way_comparison"
-)
+# opt <- list(
+#   number=100,
+#   iter="2000",
+#   directory="three_way_comparison"
+# )
 
 
 # Data Generation ---------------------------------------------------------
