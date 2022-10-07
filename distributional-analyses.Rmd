@@ -262,7 +262,7 @@ $$
 $$
 
 $$
-\log(\nu_i)=\beta^{\nu}X^{\nu}_i
+\nu_i=\beta^{\nu}X^{\nu}_i
 $$
 
 
