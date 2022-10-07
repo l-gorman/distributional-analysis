@@ -27,7 +27,7 @@ module add languages/r/4.1.0
 
 # d=$(date +%Y-%m-%d)
 
-export OMP_NUM_THREADS=4
+export OMP_NUM_THREADS=8
 
 for SAMPLE in 500 
 do
