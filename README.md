@@ -4,6 +4,6 @@ For running on BC4, you can run:
 
 Run `sbatch --export=d='directory_to_save' r_submit_distributional_test.sh`
 
-To copy files back run `scp -r lg14410@bc4login.acrc.bris.ac.uk:~/projects/distributional-analysis/outputs/xyz ./outputs/xyz`
+To copy files back run ``
 
 Check job status with this `sacct -j 10785289`

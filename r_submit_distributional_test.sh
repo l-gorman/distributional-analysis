@@ -29,9 +29,9 @@ module add languages/r/4.1.0
 
 export OMP_NUM_THREADS=4
 
-for SAMPLE in 100 200 500 
+for SAMPLE in 500 
 do
-  for ITER in 2000 5000 10000
+  for ITER in 2000 5000 10000 20000 50000
   do
     Rscript skew-normal-fit.R -n $SAMPLE -i $ITER -d $d
   done

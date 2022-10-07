@@ -20,7 +20,7 @@ opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
 
 # opt <- list(
-#   number=100,
+#   number=500,
 #   iter="2000",
 #   directory="three_way_comparison"
 # )
@@ -99,7 +99,8 @@ conv_fm <- bf(
 # Fitting Model
 conv_brm <- brm(conv_fm, 
                 data = sim_data, 
-                cores = 4,
+                cores = 8,
+                chains = 8,
                 control=list(adapt_delta = 0.99),
                 iter = opt$iter,
                 
